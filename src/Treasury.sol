@@ -25,7 +25,7 @@ interface IWstonSwapPool {
 }
 
 /**
- * @title Treasury Contract for Token ManaNFTent
+ * @title Treasury Contract for Token managememnt
  * @author TOKAMAK OPAL TEAM
  * @notice This contract manages the storage and transfer of NFT tokens and WSTON tokens within the ecosystem.
  * It facilitates interactions with the NFTFactory, Marketplace, Random Pack, and Airdrop contracts.
@@ -181,13 +181,16 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
     }
 
     /**
-     * @notice Creates a premined NFT with specified attributes.
+     * @notice Creates an NFT with specified attributes.
      * @param _value value of WSTON associated with the NFT.
+     * @param _owner owner of the new NFT.
+     * @param _tokenURI URI o the new NFT.
      * @dev the contract must hold enough WSTON to cover the entire supply of NFTs across all owners
      * @return uint256 Returns the ID of the created NFT.
      */
-    function createPreminedNFT( 
+    function createNFT( 
         uint256 _value,
+        address _owner,
         string memory _tokenURI
     ) external onlyOwner returns (uint256) {
         // safety check for WSTON solvency
@@ -198,6 +201,7 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
         // we create the NFT from the NFTFactory
         return INFTFactory(nftFactory).createNFT(
             _value,
+            _owner,
             _tokenURI
         );
     }
@@ -208,8 +212,9 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
      * @dev the contract must hold enough WSTON to cover the entire supply of NFTs across all owners
      * @return uint256[] Returns an array of IDs for the created NFTs.
      */
-    function createPreminedNFTPool(
+    function createNFTPool(
         uint256[] memory _values,
+        address[] memory _owners,
         string[] memory _tokenURIs
     ) public onlyOwner returns (uint256[] memory) {
 
@@ -227,6 +232,7 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
         // we create the pool from the NFTFactory
         return INFTFactory(nftFactory).createNFTPool(
             _values,
+            _owners,
             _tokenURIs
         );
     }

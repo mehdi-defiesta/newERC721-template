@@ -6,6 +6,7 @@ import { NFTFactoryStorage } from "../NFTFactoryStorage.sol";
 
 interface INFTFactory {
     struct Nft {
+        // add any additionnal features here
         uint256 tokenId;  
         uint256 value; // 27 decimals
         string tokenURI; // IPFS address of the metadata file 
@@ -13,19 +14,19 @@ interface INFTFactory {
 
     function createNFT( 
         uint256 _value,
+        address _owner,
         string memory _tokenURI
     ) external  returns (uint256);
 
     function createNFTPool(
         uint256[] memory _values,
+        address[] memory _owners,
         string[] memory _tokenURIs
     ) external returns (uint256[] memory);
 
     function transferFrom(address from, address to, uint256 tokenId) external;
 
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) external;
-
-    function adminTransferNFT(address _to, uint256 _tokenId) external returns (bool);
 
     function setTokenURI(uint256 tokenId, string memory _tokenURI) external;
 
