@@ -47,12 +47,6 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
         _;
     }
 
-    modifier onlyWstonSwapPoolOrOwner() {
-        require(msg.sender == wstonSwapPool ||
-        isOwner(), "caller is not the Swapper");
-        _;
-    }
-
     function pause() public onlyOwner whenNotPaused {
         paused = true;
     }
@@ -68,15 +62,13 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
     /**
      * @notice Initializes the Treasury contract with the given parameters.
      * @param _wston Address of the WSTON token.
-     * @param _ton Address of the TON token.
      * @param _nftFactory Address of the NFT factory contract.
      */
-    function initialize(address _wston, address _ton, address _nftFactory) external {
+    function initialize(address _wston, address _nftFactory) external {
         require(!initialized, "already initialized");   
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         nftFactory = _nftFactory;
         wston = _wston;
-        ton = _ton;
         initialized = true;
     }
 
@@ -90,37 +82,11 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
     }
 
     /**
-     * @notice Sets the address of the WSTON swap pool.
-     * @param _wstonSwapPool New address of the WSTON swap pool.
-     */
-    function setWstonSwapPool(address _wstonSwapPool) external onlyOwnerOrAdmin {
-        _checkNonAddress(_wstonSwapPool);
-        wstonSwapPool = _wstonSwapPool;
-    }
-
-    /**
      * @notice updates the wston token address
      * @param _wston New wston token address
      */
     function setWston(address _wston) external onlyOwner {
         wston = _wston;
-    }
-
-    /**
-     * @notice updates the ton token address
-     * @param _ton New ton token address
-     */
-    function setTon(address _ton) external onlyOwner {
-        ton = _ton;
-    }
-
-    /**
-     * @notice Approves the WSTON swap pool to spend TON tokens.
-     */
-    function tonApproveWstonSwapPool(uint256 _amount) external onlyWstonSwapPoolOrOwner returns(bool) {
-        _checkNonAddress(ton);
-        IERC20(ton).approve(wstonSwapPool, _amount);
-        return true;
     }
 
     /**
@@ -155,28 +121,6 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
 
         // transfer to the recipient
         IERC20(wston).safeTransfer(_to, _amount);
-        return true;
-    }
-
-    /**
-     * @notice Transfers TON tokens to a specified address.
-     * @param _to Address to transfer TON tokens to.
-     * @param _amount Amount of TON tokens to transfer.
-     * @dev only the owner or the admins are authorized to call the function
-     * @return bool Returns true if the transfer is successful.
-     */
-    function transferTON(address _to, uint256 _amount) external onlyOwnerOrAdmin returns(bool) {
-        // check _to diffrent from address(0)
-        _checkNonAddress(_to);
-
-        // check the balance of the treasury 
-        uint256 contractTONBalance = getTONBalance();
-        if(contractTONBalance < _amount) {
-            revert UnsuffiscientTonBalance();
-        }
-
-        // transfer to the recipient
-        IERC20(ton).safeTransfer(_to, _amount);
         return true;
     }
 
@@ -278,19 +222,12 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
     //------------------------STORAGE GETTER / VIEW FUNCTIONS--------------------------------
     //---------------------------------------------------------------------------------------
 
-    // Function to check the balance of TON token within the contract
-    function getTONBalance() public view returns (uint256) {
-        return IERC20(ton).balanceOf(address(this));
-    }
-
     // Function to check the balance of WSTON token within the contract
     function getWSTONBalance() public view returns (uint256) {
         return IERC20(wston).balanceOf(address(this));
     }
 
     function getNFTFactoryAddress() external view returns (address) {return nftFactory;}
-    function getTonAddress() external view returns(address) {return ton;}
     function getWstonAddress() external view returns(address) {return wston;}
-    function getSwapPoolAddress() external view returns(address) {return wstonSwapPool;}
 
 }

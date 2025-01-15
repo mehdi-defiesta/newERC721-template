@@ -33,7 +33,6 @@ contract NFTFactoryStorage {
 
     // contract addresses
     address internal wston;
-    address internal ton;
     address internal treasury;
 
     //---------------------------------------------------------------------------------------

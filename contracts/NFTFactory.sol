@@ -24,7 +24,7 @@ interface ITreasury {
  * for both administrative and user interactions, ensuring a comprehensive manaNFTent of NFT tokens.
  *
  * Administrative Functions
- * - Premine NFTs: Allows administrators to create and allocate NFTs directly to the treasury contract.
+ * - create NFTs: Allows administrators to create and allocate NFTs directly to the treasury contract.
  *   The purpose is to initialize the system with a predefined set of NFTs that can be distributed or sold later.
  *
  * User Functions
@@ -98,13 +98,11 @@ contract NFTFactory is ProxyStorage,
         string memory _symbol, 
         address _owner, 
         address _wston, 
-        address _ton, 
         address _treasury
     ) external initializer {
         __ERC721_init(_tokenName, _symbol);
         __Ownable_init(_owner);
         wston = _wston;
-        ton = _ton;
         treasury = _treasury;
     }
 
@@ -122,14 +120,6 @@ contract NFTFactory is ProxyStorage,
      */
     function setWston(address _wston) external onlyOwner {
         wston = _wston;
-    }
-
-    /**
-     * @notice updates the Ton token address
-     * @param _ton New wston token address.
-     */
-    function setTon(address _ton) external onlyOwner {
-        ton = _ton;
     }
 
     //---------------------------------------------------------------------------------------
@@ -418,10 +408,6 @@ contract NFTFactory is ProxyStorage,
 
     function getTreasuryAddress() external view returns (address) {
         return treasury;
-    }
-
-    function getTonAddress() external view returns (address) {
-        return ton;
     }
 
     function getWstonAddress() external view returns (address) {
